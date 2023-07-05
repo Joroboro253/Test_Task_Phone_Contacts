@@ -9,7 +9,7 @@ import javax.persistence.*;
 public class Contact {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private int cid;
     private String name;
     private String secondName;
     private String work;
@@ -26,8 +26,8 @@ public class Contact {
     public Contact() {
     }
 
-    public Contact(int id, String name, String secondName, String work, String email, String phone, String image, String description) {
-        this.id = id;
+    public Contact(int cid, String name, String secondName, String work, String email, String phone, String image, String description) {
+        this.cid = cid;
         this.name = name;
         this.secondName = secondName;
         this.work = work;
@@ -37,12 +37,12 @@ public class Contact {
         this.description = description;
     }
 
-    public int getId() {
-        return id;
+    public int getCid() {
+        return cid;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setCid(int id) {
+        this.cid = cid;
     }
 
     public String getName() {
@@ -101,4 +101,11 @@ public class Contact {
         this.description = description;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

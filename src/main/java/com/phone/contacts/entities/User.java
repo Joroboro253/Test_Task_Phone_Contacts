@@ -121,6 +121,10 @@ public class User {
         this.contacts = contacts;
     }
 
+    public List<Contact> getContacts() {
+        return contacts;
+    }
+
     @Override
     public String toString() {
         return "User " +
