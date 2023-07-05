@@ -118,7 +118,7 @@ public class UserController {
     //Show contacts handler
     @GetMapping("/show-contacts/{page}")
     public String showContacts(@PathVariable("page") Integer page, Model m, Principal principal){
-        m.addAttribute("title", "Show UserContacts");
+        m.addAttribute("title", "Show User Contacts");
 
         // send the list of contact from database
         String userName = principal.getName();
@@ -129,7 +129,7 @@ public class UserController {
 
         m.addAttribute("contacts", contacts);
         m.addAttribute("currentPage", page);
-        m.addAttribute("totalPage", contacts.getTotalPages());
+        m.addAttribute("totalPages", contacts.getTotalPages());
 
         return "normal/show_contacts";
     }
