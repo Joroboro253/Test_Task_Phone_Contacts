@@ -42,49 +42,20 @@ public class MyConfig extends WebSecurityConfigurerAdapter {
     // Create 2 users for demo
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-
-        auth.inMemoryAuthentication()
-                .withUser("user").password("{noop}password").roles("USER")
-                .and()
-                .withUser("admin").password("{noop}password").roles("USER", "ADMIN");
-
+        auth.authenticationProvider(authenticationProvider());
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-
         http
-                .authorizeHttpRequests()
-                .antMatchers("/admin/**")
-                .hasRole("ADMIN")
-                .antMatchers("/user/**")
-                .hasRole("USER")
-                .antMatchers("/**")
+                .authorizeRequests()
+                .antMatchers( "/**")
                 .permitAll()
                 .and()
-                .formLogin().disable()  // delete it later
-//                .loginPage("/signin")
-//                .loginProcessingUrl("/dologin")
-//                .defaultSuccessUrl("/user/index")
-                //.failureUrl("/login-fail")
-//                .and()
+                .httpBasic()
+                .and()
                 .csrf().disable();
-
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
 
 

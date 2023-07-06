@@ -2,6 +2,7 @@ package com.phone.contacts.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.*;
+import java.util.List;
 
 
 @Entity
@@ -13,8 +14,13 @@ public class Contact {
     private String name;
     private String secondName;
     private String work;
-    private String email;
-    private String phone;
+
+    @ElementCollection
+    private List<String> emails;
+
+    @ElementCollection
+    private List<String> phones;
+
     private String image;
     @Column(length = 1000)
     private String description;
@@ -26,15 +32,16 @@ public class Contact {
     public Contact() {
     }
 
-    public Contact(int cid, String name, String secondName, String work, String email, String phone, String image, String description) {
+    public Contact(int cid, String name, String secondName, String work, List<String> emails, List<String> phones, String image, String description, User user) {
         this.cid = cid;
         this.name = name;
         this.secondName = secondName;
         this.work = work;
-        this.email = email;
-        this.phone = phone;
+        this.emails = emails;
+        this.phones = phones;
         this.image = image;
         this.description = description;
+        this.user = user;
     }
 
     public int getCid() {
@@ -69,20 +76,20 @@ public class Contact {
         this.work = work;
     }
 
-    public String getEmail() {
-        return email;
+    public List<String> getEmails() {
+        return emails;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setEmails(List<String> emails) {
+        this.emails = emails;
     }
 
-    public String getPhone() {
-        return phone;
+    public List<String> getPhones() {
+        return phones;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setPhones(List<String> phones) {
+        this.phones = phones;
     }
 
     public String getImage() {

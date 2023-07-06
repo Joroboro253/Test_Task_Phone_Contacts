@@ -1,8 +1,11 @@
-package com.phone.contacts.entities;
+package com.phone.contacts.dto;
+
+import java.util.Collections;
+import java.util.List;
 
 public class EmailRequest {
 
-    private String to;
+    private List<String> to;
     private String subject;
     private String message;
 
@@ -10,19 +13,18 @@ public class EmailRequest {
         super();
     }
 
-    public EmailRequest(String to, String subject, String message) {
-        super();
+    public EmailRequest(List<String> to, String subject, String message) {
         this.to = to;
         this.subject = subject;
         this.message = message;
     }
 
-    public String getTo() {
-        return to;
+    public void setTo(List<String> to) {
+        this.to = to;
     }
 
-    public void setTo(String to) {
-        this.to = to;
+    public List<String> getTo() {
+        return to;
     }
 
     public String getSubject() {

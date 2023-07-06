@@ -1,14 +1,12 @@
 package com.phone.contacts.controller;
 
 import com.phone.contacts.dao.UserRepository;
+import com.phone.contacts.dto.UserRequest;
 import com.phone.contacts.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
@@ -21,17 +19,19 @@ public class TestController {
         this.userRepository = userRepository;
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<String> test()
+    @PostMapping("/test")
+    public ResponseEntity<String> test(@RequestBody UserRequest userRequest)
     {
         User user = new User();
-        user.setEmail("vluash@Mail.com");
-        user.setId(1);
-        user.setName("Vluash");
-        user.setPassword("Vluash");
-        user.setRole("ROLE_NORMAL");
+        user.setEmails(userRequest.getEmails()); // Изменение: emails теперь является списком
+        user.setPhones(userRequest.getPhones()); // Изменение: phones теперь является списком
+        user.setId(userRequest.getId());
+        user.setName(userRequest.getName());
+        user.setPassword(userRequest.getPassword());
+        user.setRole(userRequest.getRole());
         userRepository.save(user);
 
-        return ResponseEntity.ok("This is just for testing");
+        return ResponseEntity.ok("User saved successfully");
     }
 }
+

@@ -3,15 +3,7 @@ package com.phone.contacts.entities;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
@@ -23,30 +15,34 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     private String name;
-    private String email;
+    @ElementCollection
+    private List<String> emails = new ArrayList<>();
     private String password;
     private String role;
     private boolean enabled;
     private String imageUrl;
     private String about;
+    @ElementCollection
+    private List<String> phones = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL , mappedBy = "user", orphanRemoval = true)
     private List<Contact> contacts = new ArrayList<>();
 
-    public User(int id, String name, String email, String password, String role, boolean enabled, String imageUrl, String about, List<Contact> contacts) {
+
+    public User(int id, String name, List<String> emails, String password, String role, boolean enabled, String imageUrl, String about, List<String> phones, List<Contact> contacts) {
         this.id = id;
         this.name = name;
-        this.email = email;
+        this.emails = emails;
         this.password = password;
         this.role = role;
         this.enabled = enabled;
         this.imageUrl = imageUrl;
         this.about = about;
+        this.phones = phones;
         this.contacts = contacts;
     }
 
     public User() {
-        super();
     }
 
     public int getId() {
@@ -65,12 +61,12 @@ public class User {
         this.name = name;
     }
 
-    public String getEmail() {
-        return email;
+    public List<String> getEmails() {
+        return emails;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setEmails(List<String> emails) {
+        this.emails = emails;
     }
 
     public String getPassword() {
@@ -113,30 +109,35 @@ public class User {
         this.about = about;
     }
 
-    public User(List<Contact> contacts) {
-        this.contacts = contacts;
+    public List<String> getPhones() {
+        return phones;
     }
 
-    public void setContacts(List<Contact> contacts) {
-        this.contacts = contacts;
+    public void setPhones(List<String> phones) {
+        this.phones = phones;
     }
 
     public List<Contact> getContacts() {
         return contacts;
     }
 
+    public void setContacts(List<Contact> contacts) {
+        this.contacts = contacts;
+    }
+
     @Override
     public String toString() {
-        return "User " +
-                "[id=" + id +
-                ", name='" + name +
-                ", email='" + email +
-                ", password='" + password +
-                ", role='" + role +
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", emails=" + emails +
+                ", password='" + password + '\'' +
+                ", role='" + role + '\'' +
                 ", enabled=" + enabled +
-                ", imageUrl='" + imageUrl +
-                ", about='" + about +
+                ", imageUrl='" + imageUrl + '\'' +
+                ", about='" + about + '\'' +
+                ", phones=" + phones +
                 ", contacts=" + contacts +
-                ']';
+                '}';
     }
 }

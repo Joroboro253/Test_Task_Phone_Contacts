@@ -6,14 +6,14 @@ import org.springframework.stereotype.Service;
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import java.util.List;
 import java.util.Properties;
 
 @Service
 public class EmailService {
 
-    public boolean sendEmail(String subject, String message, String to){
+    public boolean sendEmail(String subject, String message, List<String> to){
         boolean flag = false;
-
 
         String form ="vlyashchenko01@gmail.com";
         String host="smtp.gmail.com";
@@ -38,24 +38,25 @@ public class EmailService {
 
         // compare the message [text, multi media]
 
-        MimeMessage m = new MimeMessage(session);
-
         try {
+            MimeMessage m = new MimeMessage(session);
             m.setFrom(form);
-            m.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
             m.setSubject(subject);
             m.setText(message);
+
+            for(String recipient : to){
+                m.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient));
+            }
 
             // send the message using Tramsport class
             Transport.send(m);
             System.out.println("Sent success........");
             flag=true;
-
-
-        } catch (Exception e)
-        {
+        } catch (Exception e){
             e.printStackTrace();
         }
         return flag;
     }
+
 }
+
