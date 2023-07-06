@@ -1,5 +1,6 @@
 package com.phone.contacts.controller;
 
+import antlr.StringUtils;
 import com.phone.contacts.dao.ContactRepository;
 import com.phone.contacts.dao.UserRepository;
 import com.phone.contacts.entities.Contact;
@@ -10,12 +11,16 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.apache.commons.io.FilenameUtils;
+import org.springframework.util.ResourceUtils;
+
 
 import javax.servlet.http.HttpSession;
 import java.io.File;
@@ -42,12 +47,14 @@ public class UserController {
 
     @ModelAttribute
     public void addCommonData(Model model, Principal principal) {
-        String username = principal.getName();
-        System.out.println("USER_NAME" + username);
+        if (principal != null) {
+            String username = principal.getName();
+            System.out.println("USER_NAME" + username);
 
-        User user = userRepository.getUserByUserName(username);
-        model.addAttribute("user", user);
-        System.out.println(user);
+            User user = userRepository.getUserByUserName(username);
+            model.addAttribute("user", user);
+            System.out.println(user);
+        }
     }
 
     // home
@@ -61,16 +68,38 @@ public class UserController {
 
     // open the add form handler
     @PostMapping("/add-contact")
-    public ResponseEntity<Message> addContact(@ModelAttribute Contact contact, Principal principal, @RequestParam("profileImage") MultipartFile file, HttpSess
-       try {
-           String name = principal.getName();
-           User user = userRepository.getUserByUserName(name);
+    public ResponseEntity<Message> addContact(@ModelAttribute Contact contact, Principal principal, @RequestParam("profileImage") MultipartFile file, HttpSession session) {
+        try {
+            String name = principal.getName();
+            User user = userRepository.getUserByUserName(name);
 
-           if(file.isEmpty())
-       }
+            if (file.isEmpty()) {
+                System.out.println("File is empty");
+                contact.setImage("contact.png");
+            } else {
+                String fileName = FilenameUtils.getName(file.getOriginalFilename());
+                contact.setImage(fileName);
+                Path path = Paths.get("src/main/resources/static/img/" + fileName);
+                Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+                System.out.println("File uploaded successfully");
+            }
 
-        return "normal/add_contact_form";
+            contact.setUser(user);
+            user.getContacts().add(contact);
+            userRepository.save(user);
+
+            System.out.println("DATA" + contact);
+            System.out.println("Contact added to database");
+
+            session.setAttribute("message", new Message("Your contact is added !!! Add more", "success"));
+            return ResponseEntity.ok(new Message("Contact added successfully", "success"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            session.setAttribute("message", new Message("Something went wrong !!! Try again", "danger"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Message("Failed to add contact", "danger"));
+        }
     }
+
 
     // Submit contact form
 
@@ -123,62 +152,92 @@ public class UserController {
 
     //Show contacts handler
     @GetMapping("/show-contacts/{page}")
-    public String showContacts(@PathVariable("page") Integer page, Model m, Principal principal){
-        m.addAttribute("title", "Show User Contacts");
-
+    public ResponseEntity<?> showContacts(@PathVariable("page") Integer page, Principal principal){
         // send the list of contact from database
         String userName = principal.getName();
         User user = this.userRepository.getUserByUserName(userName);
-
         Pageable pageable = PageRequest.of(page, 5);
-        Page<Contact> contacts = this.contactRepository.findContactByUser(user.getId(), pageable);
+        Page<Contact> contacts = contactRepository.findContactByUser(user.getId(), pageable);
 
-        m.addAttribute("contacts", contacts);
-        m.addAttribute("currentPage", page);
-        m.addAttribute("totalPages", contacts.getTotalPages());
-
-        return "normal/show_contacts";
+        return ResponseEntity.ok(contacts);
     }
 
     // handler for the email click to show user profile
     @GetMapping("/{cid}/contact")
-    public String showContactDetails(@PathVariable("cid") Integer cid, Model model, Principal principal) {
-        Optional<Contact> contactOptional = this.contactRepository.findById(cid);
-        Contact contact = contactOptional.get();
-
-        String username = principal.getName();
-        User user = this.userRepository.getUserByUserName(username);
-
-        if(user.getId() == contact.getUser().getId()) {
-            model.addAttribute("contact", contact);
-            model.addAttribute("title", contact.getName());
+    public ResponseEntity<?> showContactDetails(@PathVariable("cid") Integer cid, Principal principal) {
+        Optional<Contact> contactOptional = contactRepository.findById(cid);
+        if (contactOptional.isPresent()){
+            Contact contact = contactOptional.get();
+            String username = principal.getName();
+            User user = userRepository.getUserByUserName(username);
+            if(user.getId() == contact.getUser().getId()) {
+                return ResponseEntity.ok(contact);
+            } else {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new Message("Access denied", "danger"));
+            }
+        } else {
+            return ResponseEntity.notFound().build();
         }
 
-        return "normal/contact_detail";
     }
 
     @GetMapping("/delete/{cid}")
-    public String deleteContact(@PathVariable("cid") Integer cid, Model m, HttpSession session, Principal principal) {
-        System.out.println("CID : " + cid);
-        Contact contact = this.contactRepository.findById(cid).get();
-
+    public ResponseEntity<Message> deleteContact(@PathVariable("cid") Integer cid, HttpSession session, Principal principal) {
+        Optional<Contact> contactOptional = contactRepository.findById(cid);
         // Removing the contact  data from data base use the
-        User user = this.userRepository.getUserByUserName(principal.getName());
-        user.getContacts().remove(contact);
-        this.userRepository.save(user);
-
-        session.setAttribute("message", new Message("Contact deleted Successfully", "success"));
-        return "redirect:/user/show-contacts/0";
+        if(contactOptional.isPresent()){
+            Contact contact = contactOptional.get();
+            User user = userRepository.getUserByUserName(principal.getName());
+            if(user.getId() == contact.getUser().getId()) {
+                user.getContacts().remove(contact);
+                userRepository.save(user);
+                session.setAttribute("message", new Message("Contact deleted Successfully", "success"));
+                return ResponseEntity.ok(new Message("Conract deleted successfully", "success"));
+            } else {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new Message("Access denied", "danger"));
+            }
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     //   open update form folder
     @PostMapping("/update-contact/{cid}")
-    public String updateForm(@PathVariable("cid") Integer cid, Model m) {
-        m.addAttribute("title", "Update Contact");
-        Contact contact = this.contactRepository.findById(cid).get();
+    public ResponseEntity<Message> updateForm(@PathVariable("cid") Integer cid, @ModelAttribute Contact updatedContact, @RequestParam("profileImage") MultipartFile file, HttpSession session, Principal principal) {
+        Optional<Contact> contactOptional = contactRepository.findById(cid);
+        if(contactOptional.isPresent()) {
+            Contact existingContact = contactOptional.get();
+            User user = userRepository.getUserByUserName(principal.getName());
+            if(user.getId() == existingContact.getUser().getId()) {
+                existingContact.setName(updatedContact.getName());
+                existingContact.setEmail(updatedContact.getEmail());
+                existingContact.setPhone(updatedContact.getPhone());
 
-        m.addAttribute("contact", contact);
-        return "/normal/update_form";
+                if (!file.isEmpty()) {
+                    String fileName = FilenameUtils.getName(file.getOriginalFilename());
+                    existingContact.setImage(fileName);
+
+                    try {
+                        Path path = Paths.get("src/main/resources/static/img/" + fileName);
+                        Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+                        System.out.println("File uploaded successfully");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        session.setAttribute("message", new Message("Something went wrong !!! Try again", "danger"));
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Message("Failed to update contact", "danger"));
+                    }
+                }
+
+                contactRepository.save(existingContact);
+                session.setAttribute("message", new Message("Contact updated successfully", "success"));
+                return ResponseEntity.ok(new Message("Contact updated successfully", "success"));
+            } else {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new Message("Access denied", "danger"));
+            }
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+
     }
 
     // the update form submission
@@ -218,9 +277,9 @@ public class UserController {
     }
 
     @GetMapping("/profile")
-    public String yourProfile(Model m) {
-        m.addAttribute("title", "Profile Page");
-
-        return "normal/profile";
+    public ResponseEntity<User> userProfile(Principal principal) {
+        String username = principal.getName();
+        User user = userRepository.getUserByUserName(username);
+        return ResponseEntity.ok(user);
     }
 }

@@ -39,9 +39,15 @@ public class MyConfig extends WebSecurityConfigurerAdapter {
 
 
 
+    // Create 2 users for demo
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.authenticationProvider(authenticationProvider());
+
+        auth.inMemoryAuthentication()
+                .withUser("user").password("{noop}password").roles("USER")
+                .and()
+                .withUser("admin").password("{noop}password").roles("USER", "ADMIN");
+
     }
 
     @Override
@@ -56,12 +62,12 @@ public class MyConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/**")
                 .permitAll()
                 .and()
-                .formLogin()
-                .loginPage("/signin")
-                .loginProcessingUrl("/dologin")
-                .defaultSuccessUrl("/user/index")
+                .formLogin().disable()  // delete it later
+//                .loginPage("/signin")
+//                .loginProcessingUrl("/dologin")
+//                .defaultSuccessUrl("/user/index")
                 //.failureUrl("/login-fail")
-                .and()
+//                .and()
                 .csrf().disable();
 
     }
