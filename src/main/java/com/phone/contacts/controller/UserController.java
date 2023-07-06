@@ -10,6 +10,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -26,13 +28,17 @@ import java.security.Principal;
 import java.util.Date;
 import java.util.Optional;
 
-@Controller
-@RequestMapping("/user")
+@RestController
+@RequestMapping("/api/user")
 public class UserController {
-    @Autowired
     private UserRepository userRepository;
-    @Autowired
     private ContactRepository contactRepository;
+
+    @Autowired
+    public UserController(UserRepository userRepository, ContactRepository contactRepository) {
+        this.userRepository = userRepository;
+        this.contactRepository = contactRepository;
+    }
 
     @ModelAttribute
     public void addCommonData(Model model, Principal principal) {
@@ -47,21 +53,21 @@ public class UserController {
     // home
 
     @RequestMapping("/index")
-    public String dashboard(Model model, Principal principal) {
-        model.addAttribute("title", "User DashBoard");
-
+    public ResponseEntity<String> dashboard(Principal principal) {
         String username = principal.getName();
         User user = userRepository.getUserByUserName(username);
-        model.addAttribute("person", user.getName());
-        model.addAttribute("date", new Date());
-        return "normal/user_dashboard";
+        return ResponseEntity.ok("User Dashboard - " + user.getName());
     }
 
     // open the add form handler
-    @GetMapping("/add-contact")
-    public String openAddContactForm(Model model) {
-        model.addAttribute("title", "Add Contact");
-        model.addAttribute("contact", new Contact());
+    @PostMapping("/add-contact")
+    public ResponseEntity<Message> addContact(@ModelAttribute Contact contact, Principal principal, @RequestParam("profileImage") MultipartFile file, HttpSess
+       try {
+           String name = principal.getName();
+           User user = userRepository.getUserByUserName(name);
+
+           if(file.isEmpty())
+       }
 
         return "normal/add_contact_form";
     }

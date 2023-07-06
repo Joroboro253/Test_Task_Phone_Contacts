@@ -3,18 +3,26 @@ package com.phone.contacts.controller;
 import com.phone.contacts.dao.UserRepository;
 import com.phone.contacts.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
+@RequestMapping("/api")
 public class TestController {
+
+    private final UserRepository userRepository;
+
     @Autowired
-    UserRepository userRepository;
+    public TestController(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @GetMapping("/test")
-    @ResponseBody
-    public String test()
+    public ResponseEntity<String> test()
     {
         User user = new User();
         user.setEmail("vluash@Mail.com");
@@ -24,6 +32,6 @@ public class TestController {
         user.setRole("ROLE_NORMAL");
         userRepository.save(user);
 
-        return "This is just for testing";
+        return ResponseEntity.ok("This is just for testing");
     }
 }

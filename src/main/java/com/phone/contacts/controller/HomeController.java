@@ -4,57 +4,62 @@ import com.phone.contacts.dao.UserRepository;
 import com.phone.contacts.entities.User;
 import com.phone.contacts.helper.Message;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
-@Controller
+@RestController
+@RequestMapping("/api")
 public class HomeController {
 
-    @Autowired
     private BCryptPasswordEncoder passwordEncoder;
-
-    @Autowired
     private UserRepository userRepository;
 
-    @RequestMapping("/")
+    @Autowired
+    public HomeController(BCryptPasswordEncoder passwordEncoder, UserRepository userRepository) {
+        this.passwordEncoder = passwordEncoder;
+        this.userRepository = userRepository;
+    }
+
+    @GetMapping("/")
     public String home(Model m){
-        m.addAttribute("title", "Home -Smart Contact Manager");
-        return "home";
+        return "Home - Smart Contact Manager";
     }
 
-    @RequestMapping("/about")
+    @GetMapping("/about")
     public String about(Model m){
-        m.addAttribute("title", "About -Smart Contact Manager");
-        return "about";
+        return "About -Smart Contact Manager";
     }
 
-    @RequestMapping("/signup")
-    public String signup(Model m) {
-        m.addAttribute("title", "Register Here -Smart Contact Manager");
-        m.addAttribute("user", new User());
+    @PostMapping("/signup")
+    public String signup(@RequestBody User user) {
+        user.setRole("ROLE_USER");
+        user.setEnabled(true);
+        user.setImageUrl("default.png");
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        return "signup";
+        User result = userRepository.save(user);
+
+        if(result != null) {
+            return "User registered successfully";
+        } else {
+            return "Failed to register";
+        }
+
     }
 
     @PostMapping("/do_register")
-    public String registerUser(@Valid @ModelAttribute("user") User user, BindingResult result1, @RequestParam(value = "agreement", defaultValue = "false") Boolean agreement, Model model, HttpSession session) {
+    public ResponseEntity<Message> registerUser(@Valid @RequestBody User user, BindingResult result) {
         try {
-            if(!agreement) {
-                System.out.println("You have not agreed the terms and conditions");
-                throw new Exception("U have not agreed the terms and conditions");
-            }
-            if(result1.hasErrors())
+            if(result.hasErrors())
             {
-                System.out.println("ERROR " + result1.toString());
-                model.addAttribute("user", user);
-                return "signup";
+                System.out.println("ERROR " + result.toString());
+                return ResponseEntity.badRequest().body(new Message("Validation error", "alert-danger"));
             }
 
             user.setRole("ROLE_USER");
@@ -62,27 +67,22 @@ public class HomeController {
             user.setImageUrl("default.png");
             user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-            System.out.println("Agreement " + agreement);
-            System.out.println("USER " + user);
-
             // saving data to database
-            User result = this.userRepository.save(user);
-            model.addAttribute("message", new Message("SuccessFully Registered !!!", "alert-success"));
-
-            return "signup";
-
+            User savedUser = userRepository.save(user);
+            if(savedUser != null) {
+                return ResponseEntity.ok(new Message("Successfully registered", "alert-success"));
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Message("Failed to register user", "alert-danger"));
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            model.addAttribute("user", user);
-            session.setAttribute("message", new Message("Something went wrong !!! " + e.getMessage(), "alert-danger "));
-            return "signup";
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Message("Something went wrong: " + e.getMessage(), "alert-danger"));
         }
     }
 
     @GetMapping("/signin")
-    public String customlogin(Model m){
-        m.addAttribute("title", "The Login Page");
-        return "login";
+    public String customlogin(){
+        return "The Login Page";
     }
 
 }
