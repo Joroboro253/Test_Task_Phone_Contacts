@@ -40,7 +40,7 @@ Use any relational database to store contacts data. Take into account that schem
 2. Navigate to the project directory: 
   cd Test_Task_Phone_Contacts
 3. Configure the database connection in the `application.properties` file.
-4. 4. Build the project and package it into a JAR file: 
+4. Build the project and package it into a JAR file: 
   mvn clean install
 5. Run the application:
 java -jar target/Test_Task_Phone_Contacts.jar
