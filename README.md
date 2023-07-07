@@ -1,9 +1,9 @@
 ### The Spring REST API “Phone contacts”
-##This hone contacts application allows adding/editing and deleting contacts data. Single contact is represented by the following data:
+This hone contacts application allows adding/editing and deleting contacts data. Single contact is represented by the following data:
 1.     Contact name
 2.     Contact emails. One contact may have multiple emails
 3.     Contact phone number. One contact may have multiple phone numbers
-##User should have a possibility to:
+User should have a possibility to:
 1.     Register in the app, login and password should be provided during registration
 2.     Login to the app
 3.     Add new contact
@@ -11,11 +11,11 @@
 5.     Delete existing contact
 6.     Get list of existing contacts
 
-##From additional task in this application was:
+From additional task in this application was:
 - Added swagger documentation to the project-
 -   Added ability to upload image for each contact when create/update contact
 
-##Requirements:
+Requirements:
 
 -       Use any relational database to store contacts data. Take into account that schema should be designed in accordance with 1st and 2nd normal forms
 -       Use Spring Boot, Spring Web, Spring Security and Spring Data + Hibernate
