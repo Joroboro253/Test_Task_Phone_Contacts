@@ -31,3 +31,9 @@ Additional which was Done work as bonus:
 
 Running application
 Running swegger
+
+
+Use any relational database to store contacts data. Take into account that schema should be designed in accordance with 1st and 2nd normal forms
+-       Use Spring Boot, Spring Web, Spring Security and Spring Data + Hibernate
+-       Should give access only to authorized users, so each user should have his own list of phone contacts (Use Spring Security)
+-       Be a RESTful webservice from a client perspective
