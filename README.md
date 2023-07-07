@@ -1,9 +1,9 @@
-### The Spring REST API “Phone contacts”
+## The Spring REST API “Phone contacts”
 This hone contacts application allows adding/editing and deleting contacts data. Single contact is represented by the following data:
 1. Contact name
 2. Contact emails. One contact may have multiple emails
 3. Contact phone number. One contact may have multiple phone numbers
-# User should have a possibility to:
+### User should have a possibility to:
 1. Register in the app, login and password should be provided during registration
 2. Login to the app
 3. Add new contact
@@ -34,7 +34,7 @@ Use any relational database to store contacts data. Take into account that schem
 - Should give access only to authorized users, so each user should have his own list of phone contacts (Use Spring Security)
 - Be a RESTful webservice from a client perspective
 
-## Getting Started
+### Getting Started
 1. Clone the repository: 
   https://github.com/Joroboro253/Test_Task_Phone_Contacts.git
 2. Navigate to the project directory: 
@@ -48,6 +48,6 @@ java -jar target/Test_Task_Phone_Contacts.jar
 7. For more detailed API documentation, please refer to the link:
    http://localhost:8080/swagger-ui/index.html#/search-controller/search
 
-## License
+### License
 The Spring PetClinic sample application is released under version 2.0 of the Apache License.
 
