@@ -37,3 +37,21 @@ Use any relational database to store contacts data. Take into account that schem
 -       Use Spring Boot, Spring Web, Spring Security and Spring Data + Hibernate
 -       Should give access only to authorized users, so each user should have his own list of phone contacts (Use Spring Security)
 -       Be a RESTful webservice from a client perspective
+
+## Getting Started
+1. Clone the repository: 
+  https://github.com/Joroboro253/Test_Task_Phone_Contacts.git
+2. Navigate to the project directory: 
+  cd Test_Task_Phone_Contacts
+3. Configure the database connection in the `application.properties` file.
+4. 4. Build the project and package it into a JAR file: 
+  mvn clean install
+5. Run the application:
+java -jar target/Test_Task_Phone_Contacts.jar
+6. Open a web browser and go to [http://localhost:8080] to access the application.
+7. For more detailed API documentation, please refer to the link:
+   http://localhost:8080/swagger-ui/index.html#/search-controller/search
+
+## License
+The Spring PetClinic sample application is released under version 2.0 of the Apache License.
+
