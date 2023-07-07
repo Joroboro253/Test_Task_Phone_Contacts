@@ -30,16 +30,11 @@ public class MyConfig extends WebSecurityConfigurerAdapter {
     public DaoAuthenticationProvider authenticationProvider()
     {
         DaoAuthenticationProvider daoAuthenticationProvider= new DaoAuthenticationProvider();
-
         daoAuthenticationProvider.setUserDetailsService(this.getUserDetailService());;
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
-
         return daoAuthenticationProvider;
     }
 
-
-
-    // Create 2 users for demo
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(authenticationProvider());
@@ -49,8 +44,12 @@ public class MyConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .antMatchers( "/**")
+                .antMatchers("/api/**", "/register", "/**", "/", "/about", "/signup", "/do_register", "/signin", "/register/", "/search/{query}",
+                        "/test", "/api/user", "/index", "/add-contact", "/process-contact", "/show-contacts/{page}", "/{cid}/contact", "/delete/{cid}",
+                        "/update-contact/{cid}", "/process-update", "/profile")
                 .permitAll()
+                .anyRequest()
+                .authenticated()
                 .and()
                 .httpBasic()
                 .and()

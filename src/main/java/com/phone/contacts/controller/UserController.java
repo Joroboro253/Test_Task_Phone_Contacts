@@ -70,16 +70,28 @@ public class UserController {
 
     // open the add form handler
     @PostMapping("/add-contact")
-    public ResponseEntity<Contact> addContact(@RequestBody Contact contact, Principal principal) {
+    public ResponseEntity<Contact> addContact(@RequestBody Contact request, Principal principal) {
         String name = principal.getName();
         User user = userRepository.getUserByUserName(name);
 
+        Contact contact = new Contact();
+        contact.setName(request.getName());
         contact.setUser(user);
+
+        if (request.getPhones() != null && !request.getPhones().isEmpty()) {
+            contact.setPhones(request.getPhones());
+        }
+
+        if (request.getEmails() != null && !request.getEmails().isEmpty()) {
+            contact.setEmails(request.getEmails());
+        }
+
         user.getContacts().add(contact);
         userRepository.save(user);
 
         return new ResponseEntity<>(contact, HttpStatus.CREATED);
     }
+
 
 
     // Submit contact form
