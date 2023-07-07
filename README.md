@@ -1,6 +1,6 @@
 ### The Spring REST API “Phone contacts”
 This hone contacts application allows adding/editing and deleting contacts data. Single contact is represented by the following data:
-1.     Contact name
+1. Contact name
 2.     Contact emails. One contact may have multiple emails
 3.     Contact phone number. One contact may have multiple phone numbers
 User should have a possibility to:
