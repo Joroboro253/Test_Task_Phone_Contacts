@@ -3,6 +3,8 @@ package com.phone.contacts.controller;
 import com.phone.contacts.dao.UserRepository;
 import com.phone.contacts.dto.UserRequest;
 import com.phone.contacts.entities.User;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
+@Api(description = "Test controller")
 public class TestController {
 
     private final UserRepository userRepository;
@@ -20,11 +23,12 @@ public class TestController {
     }
 
     @PostMapping("/test")
+    @ApiOperation("Тестовый метод")
     public ResponseEntity<String> test(@RequestBody UserRequest userRequest)
     {
         User user = new User();
-        user.setEmails(userRequest.getEmails()); // Изменение: emails теперь является списком
-        user.setPhones(userRequest.getPhones()); // Изменение: phones теперь является списком
+        user.setEmails(userRequest.getEmails());
+        user.setPhones(userRequest.getPhones());
         user.setId(userRequest.getId());
         user.setName(userRequest.getName());
         user.setPassword(userRequest.getPassword());
