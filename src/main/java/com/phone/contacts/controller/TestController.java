@@ -7,7 +7,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,7 +22,7 @@ public class TestController {
     }
 
     @PostMapping("/test")
-    @ApiOperation("Тестовый метод")
+    @ApiOperation("Testing")
     public ResponseEntity<String> test(@RequestBody UserRequest userRequest)
     {
         User user = new User();

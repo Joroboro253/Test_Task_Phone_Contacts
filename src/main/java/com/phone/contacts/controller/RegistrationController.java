@@ -26,20 +26,20 @@ public class RegistrationController {
     @PostMapping("/register")
     public ResponseEntity<Message> registerUser(@RequestBody User user) {
         try {
-            // Проверка, существует ли пользователь с таким же именем пользователя
+            // Check if a user with the same username exists
             User existingUser = userRepository.getUserByUserName(user.getName());
 
             if (existingUser != null) {
                 return ResponseEntity.badRequest().body(new Message("Username is already taken", "alert-danger"));
             }
 
-            // Установка значений по умолчанию и хеширование пароля
+            // Setting default values and password hashing
             user.setRole("ROLE_USER");
             user.setEnabled(true);
             user.setImageUrl("default.png");
             user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-            // Сохранение данных пользователя в базе данных
+            // Saving user data in the database
             User savedUser = userRepository.save(user);
 
             if (savedUser != null) {

@@ -1,6 +1,5 @@
 package com.phone.contacts.dto;
 
-import java.util.Collections;
 import java.util.List;
 
 public class EmailRequest {

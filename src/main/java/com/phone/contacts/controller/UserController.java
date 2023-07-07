@@ -16,8 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.apache.commons.io.FilenameUtils;
-
 
 
 import javax.servlet.http.HttpSession;
@@ -28,7 +26,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.security.Principal;
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -148,7 +145,7 @@ public class UserController {
     public ResponseEntity<?> showContacts(@PathVariable("page") Integer page, Principal principal){
         String userName = principal.getName();
         User user = this.userRepository.getUserByUserName(userName);
-        Pageable pageable = PageRequest.of(page, 5); // you can change the number of rows per page
+        Pageable pageable = PageRequest.of(page, 5);
         Page<Contact> contacts = contactRepository.findContactByUser(user.getId(), pageable);
 
         return new ResponseEntity<>(contacts, HttpStatus.OK);
